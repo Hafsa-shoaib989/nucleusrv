@@ -12,6 +12,67 @@ NOTE: X-commit messages below refer to git commits in the following
   V-commit: https://github.com/riscv/riscv-v-spec
   C-commit: https://github.com/riscv/riscv-fast-interrupt
 
+- The count overflow and mode-based filtering extension (Sscofpmf) has been
+  implemented when enabled by parameter Sscofpmf. Note that performance counters
+  are implementation-defined, so this model implements only the CSR state for
+  that extension, and not the performance counters themselves.
+- Parameter mstatus_fs_mode now supports option execute_not_store; if selected,
+  this sets the value of mstatus.FS to Dirty (3) on execution of any floating
+  point instruction that is not a store.
+- Parameter mstatus_fs_mode now supports option execute_any; if selected, this
+  sets the value of mstatus.FS to Dirty (3) on execution of any floating point
+  instruction.
+- Some Trigger Module issues have been corrected:
+  - Attempts to set tdata1 to zero now cause the value read back to be of type
+    15, indicating a disabled trigger, if that trigger type is implemented.
+  - All triggers now reset to disabled type 15, if that type is implemented, 
+    and to the first implemented trigger type otherwise.
+  - Values read and written for tdata2 for trigger type 6 have been corrected.
+- If the C extension is present and cannot be disabled, bit 0 in medeleg and
+  the etrigger view of tdata2 is no longer writeable.
+- New parameter PMP_R0W1 specifies the behavior of PMP configuration registers
+  when the composite RWX field is written with an illegal value (R=0, W=1):
+    RVPMPI_RWX_00X : set R=0 and W=0, modify X
+    RVPMPI_RWX_11X : set R=1 and W=1, modify X
+    RVPMPI_RWX_PPX : preserve previous R and W, modify X
+    RVPMPI_RWX_PPP : preserve previous RWX
+    RVPMPI_RWX_000 : set RWX=000
+- New parameter nmi_absent removes NMI ports and nmi-related parameters for
+  clarity when NMI is not implemented.
+- When Hypervisor mode is implemented, the syndrome reported for compressed
+  load and store instructions has been corrected.
+- CLIC version 0.9-draft-20230801 has been created, matching the specification
+  as of 1st August 2023 (C-commit 97a2d57), with these differences compared to
+  the previous 0.9-draft-20221108 version:
+  - C-commit 6728eda: change addresses of mintstatus, sintstatus, uintstatus to
+    0xFB1, 0xDB1, and 0xCB1, respectively;
+  - C-commit ccc3e22: introduce separate cliccfg per privilege mode.
+  - C-commit f369971: xintthresh cleared by return to lower-privilege mode
+  - C-commit 9d07841: new encoding of xcliccfg registers
+  - C-commit c16a3d3: xepc is aligned on xret when inhv is active
+  - C-commit d9ecea4: inhv is now held in exception mode, not interrupt mode
+- NMI interrupts are now disabled when single-stepping with dcsr.stepie=0.
+- New Boolean parameter nmi_high_priority specifies that NMI interrupts are
+  higher priority than Debug and Trigger Module events (by default, they are
+  lower priority).
+- Vector Cryptographic Extension Zvkb is now a subset of Zvbb and not an alias
+  of it.
+- Some cryptographic extension decode issues have been corrected when both K
+  extension and bit manipulation extension are present. This change corrects
+  behavior when variants of shfli, unshfli, gorci, xperm and clmul instructions
+  are encountered that are not supported by either K or bit manipulation
+  extensions. These decodes now cause Illegal Instruction exceptions.
+- Behaviour of extended RISC-V models has been changed:
+  - Callbacks of type riscvDerivedMorphFn are now passed the current program
+    counter (thisPC) as the third argument.
+  - Extended model preMorph and postMorph callbacks are now called for both
+    base model and extended model instructions (previously, they were called for
+    base model instructions but not extended model instructions).
+
+Date 2023-July-25 
+Release 20230724.0 
+===
+
 - When WFI is not a NOP (wfi_is_nop is False), new input signal restart_wfi
   causes a hart to resume from WFI state when high.
 - Vector Cryptographic Extension vaeskf2.vi instruction behavior has been

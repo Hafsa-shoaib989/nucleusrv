@@ -18,7 +18,7 @@ class Top(programFile:Option[String], dataFile:Option[String]) extends Module{
   })
 
   implicit val config = Configs(XLEN=32, M=true, C=true, TRACE=true)
-  implicit val vec_config = VaquitaConfig (256,32,32,8)
+  implicit val vec_config = VaquitaConfig (256,32,32,8,true)
 
   val core: Core = Module(new Core())
   core.io.stall := false.B
@@ -50,7 +50,7 @@ val vec_read_h4 = RegNext(vec_h3)
   
 
 
-  core.io.vec_dmemRsp.bits.dataResponse := Mux(vec_read_h4,dmem.io.rsp.bits.dataResponse,0.U)
+  core.io.vec_dmemRsp.bits.dataResponse := dmem.io.rsp.bits.dataResponse
   core.io.vec_dmemRsp.valid := 1.B
   // io.vec_dmemRsp.ready := 1.B
   core.io.vec_dmemReq.ready := 1.B
