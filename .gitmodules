@@ -1,3 +1,7 @@
 [submodule "vaquita"]
 	path = vaquita
-	url = https://github.com/merledu/vaquita.git
+	url = https://github.com/Hafsa-shoaib989/vaquita.git
+	branch = vecfpu
+[submodule "berkeley-hardfloat"]
+	path = berkeley-hardfloat
+	url = https://github.com/ucb-bar/berkeley-hardfloat.git
