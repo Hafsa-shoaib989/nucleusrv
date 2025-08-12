@@ -213,10 +213,8 @@ val lmul = RegInit(1.U(32.W))
   // pc.io.halt := Mux(io.imemReq.valid || ~EX.stall || ~ID.stall, 0.B, 1.B)
   pc.io.halt := Mux(((EX.stall || ID.stall || IF_stall || ~io.imemReq.valid) | ral_halt_o), 1.B, 0.B)
 
-  val div_instruction = (instruction(6,0)==="b1010111".U && (instruction(14,12)==="b001".U || instruction(14,12)==="b101".U) && (instruction(31,26)==="b100000".U || instruction(31,26)==="b100001".U))
-  dontTouch(div_instruction)
   // val fpdiv = vec_top_module1.io.fpdiv_valid
-  
+  val div_instruction = (instruction(6,0)==="b1010111".U && (instruction(14,12)==="b001".U || instruction(14,12)==="b101".U) && (instruction(31,26)==="b100000".U || instruction(31,26)==="b100001".U))
   val fpdivValid = WireInit(false.B)
   val div_counter = RegInit(0.U(32.W))
     when (div_instruction && div_counter < 40.U) {
@@ -226,12 +224,8 @@ val lmul = RegInit(1.U(32.W))
         div_counter := 0.U
         fpdivValid := 0.B
     }
-  // val 
-  dontTouch(div_counter)
-  dontTouch(fpdivValid)
 
   val npc = Mux(vec_stall || (fpdivValid), pc.io.out,Mux(ID.hdu_pcWrite, Mux(ID.pcSrc, ID.pcPlusOffset.asSInt(), Mux(is_comp, pc.io.pc2, pc.io.pc4)), pc.io.out))
-  // val npc = Mux(ID.hdu_pcWrite, Mux(ID.pcSrc, ID.pcPlusOffset.asSInt(), Mux(is_comp, pc.io.pc2, pc.io.pc4)), pc.io.out)
   pc.io.in := npc
 
   when(ID.hdu_if_reg_write) {
