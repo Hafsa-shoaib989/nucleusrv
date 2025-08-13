@@ -215,12 +215,13 @@ val lmul = RegInit(1.U(32.W))
 
   // val fpdiv = vec_top_module1.io.fpdiv_valid
   val div_instruction = (instruction(6,0)==="b1010111".U && (instruction(14,12)==="b001".U || instruction(14,12)==="b101".U) && (instruction(31,26)==="b100000".U || instruction(31,26)==="b100001".U))
+  val sqrt_instruction = (instruction(6,0)==="b1010111".U && (instruction(14,12)==="b001".U) && (instruction(31,26)==="b010011".U) && (instruction(19,15)==="b00000".U))
   val fpdivValid = WireInit(false.B)
   val div_counter = RegInit(0.U(32.W))
-    when (div_instruction && div_counter < 40.U) {
+    when ((div_instruction || sqrt_instruction) && div_counter < 31.U) {
         div_counter := div_counter + 1.U
         fpdivValid := 1.B
-    }.elsewhen (div_counter === 40.U) {
+    }.elsewhen (div_counter === 31.U) {
         div_counter := 0.U
         fpdivValid := 0.B
     }
