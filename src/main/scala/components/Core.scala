@@ -174,8 +174,9 @@ val lmul = RegInit(1.U(32.W))
   when(vec_load_store_bit===1.B && vec_load_store_counter>0.U){
     vec_load_store_counter := vec_load_store_counter - 1.U
     vec_stall := true.B
-  }//.elsewhen(vec_load_store_bit===1.B && vec_load_store_counter===1.U){}
-.otherwise{
+  }.elsewhen(vec_load_store_bit===1.B && vec_load_store_counter===0.U){
+    vec_load_store_counter := ((vec_config.vlen.U*lmul)/32.U)-1.U
+}.otherwise{
   when (instruction(6,0)==="b1010111".U && instruction(14,12)==="b111".U){
     when (instruction(22,20)==="b000".U){
       lmul := 1.U
